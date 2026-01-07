@@ -1,0 +1,180 @@
+package main.java.intrpinator;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static java.lang.Character.isAlphabetic;
+import static java.lang.Character.isDigit;
+import static main.java.intrpinator.TokenType.*;
+
+class Lexer {
+    private final String source;
+    private final List<Token> tokens = new ArrayList<>();
+
+    Lexer(String source) {
+        this.source = source;
+    }
+
+    private int lex_start_idx = 0 ;
+    private int current_idx = 0;
+    private int line = 0;
+    private static final Map<String, TokenType> keywords;
+    static {
+        keywords = new HashMap<>();
+        keywords.put("veh", AND);
+        keywords.put("oh", OR);
+        keywords.put("kita", CLASS);
+        keywords.put("zeh", THIS);
+        keywords.put("eim", IF);
+        keywords.put("aheret", ELSE);
+        keywords.put("lo-nachon", FALSE);
+        keywords.put("nachon", TRUE);
+        keywords.put("leh", FOR);
+        keywords.put("zlich", NULL);
+        keywords.put("phunktsia", FUNCTION);
+        keywords.put("hadpes", PRINT);
+        keywords.put("hachzer", RETURN);
+        keywords.put("super", SUPER);
+        keywords.put("mish", VAR); //mishtaneh
+        keywords.put("bezman", WHILE);
+    }
+
+    public List<Token> scanTokens() {
+        while (!endOfFile()) {
+            lex_start_idx = current_idx;
+            scanToken();
+        }
+        tokens.add(new Token(EOF, "", null, line));
+        return tokens;
+    }
+
+    private void scanToken() {
+        char c = advance();
+        switch (c) {
+            case '(': addToken(LEFT_PAREN); break;
+            case ')': addToken(RIGHT_PAREN); break;
+            case '{': addToken(LEFT_BRACE); break;
+            case '}': addToken(RIGHT_BRACE); break;
+            case ',': addToken(COMMA); break;
+            case '.': addToken(DOT); break;
+            case '-': addToken(MINUS); break;
+            case '+': addToken(PLUS); break;
+            case ';': addToken(SEMICOLON); break;
+            case '*': addToken(STAR); break;
+
+            case '!':
+                addToken(match('=') ? BANG_EQUAL : BANG);
+                break;
+            case '=':
+                addToken(match('=') ? EQUAL_EQUAL : EQUAL);
+                break;
+            case '<':
+                addToken(match('=') ? LESS_EQUAL : LESS);
+                break;
+            case '>':
+                addToken(match('=') ? GREATER_EQUAL : GREATER);
+                break;
+            case '/':
+                if (match('/')) {
+                    while (peek() != '\n' && !endOfFile()) advance();
+                } else {
+                    addToken(SLASH);
+                }
+                break;
+
+            case ' ':
+            case '\r':
+            case '\t':
+                // Ignore whitespace.
+                break;
+            case '\n':
+                line++;
+                break;
+
+            case '"': string(); break;
+            default:
+                if (isDigit(c)) number();
+                else if (isAlphabetic(c)) identifier();
+                else Intrpinator.error(line, "Unexpected characer: " + c);
+                break;
+        }
+    }
+
+
+    // LITERALS
+    private void identifier() {
+        while (isAlphaNumeric(peek())) advance();
+        String lexeme = getLexeme();
+        TokenType type = keywords.get(lexeme);
+        if (type == null) addToken(IDENTIFIER);
+        else addToken(type);
+    }
+
+    private void number() {
+        while (isDigit(peek())) advance();
+        if (peekFuture() == '.' && isDigit(peek())) {
+            do advance();
+            while (isDigit(peek()));
+        }
+        addToken(NUMBER, Double.parseDouble(getLexeme()));
+    }
+
+    private void string() {
+        while (peek() != '"' && !endOfFile()) {
+            if (peek() == '\n') line++;
+            advance();
+        }
+        if (endOfFile()) {
+            Intrpinator.error(line, "Unterminated String from lines");
+            return;
+        }
+        advance();
+        addToken(STRING, source.substring(lex_start_idx+1, current_idx-1));
+    }
+
+    // HELPER FUNCTIONS
+
+    // non-consume
+    private char peek() {
+        if (endOfFile()) return '\0';
+        return source.charAt(current_idx);
+    }
+    private char peekFuture() {
+        if (current_idx + 1 >= source.length()) return '\0';
+        return source.charAt(current_idx + 1);
+    }
+
+    // consume
+    private boolean match(char c) {
+        boolean result = endOfFile() || source.charAt(current_idx + 1) != c;
+        if (!result) return false;
+        current_idx++;
+        return true;
+    }
+    public char advance() {
+        current_idx += 1;
+        return source.charAt(current_idx - 1);
+    }
+
+    // tokens
+    public void addToken(TokenType type) {
+        addToken(type, null);
+    }
+    public void addToken(TokenType type, Object literal) {
+        tokens.add(new Token(type, getLexeme(), literal, line));
+    }
+
+    // misc
+    private boolean endOfFile() {
+        return current_idx >= source.length();
+    }
+    private boolean isAlphaNumeric(char c) {
+        return isAlphabetic(c) || isDigit(c);
+    }
+    private String getLexeme() {
+        return source.substring(lex_start_idx, current_idx);
+    }
+
+}
