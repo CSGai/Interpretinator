@@ -14,6 +14,20 @@ class Token {
     }
 
     public String toString() {
-        return String.format("{lexeme: '%s'\nliteral: '%s\ntype: '%s'\nline: '%d'}", lexeme, literal, type, line);
+        return String.format(
+                "{lexeme: %-20s literal: %-20s type: %-20s line: %d}",
+                raw(lexeme),
+                literal instanceof String ? raw((String) literal) : String.valueOf(literal),
+                type,
+                line
+        );
+    }
+    static String raw(String s) {
+        if (s == null) return "null";
+        return s
+                .replace("\\", "\\\\")
+                .replace("\n", "\\n")
+                .replace("\r", "\\r")
+                .replace("\t", "\\t");
     }
 }

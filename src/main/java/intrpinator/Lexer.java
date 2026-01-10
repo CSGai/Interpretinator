@@ -31,7 +31,6 @@ class Lexer {
         keywords.put("aheret", ELSE);
         keywords.put("lo-nachon", FALSE);
         keywords.put("nachon", TRUE);
-        keywords.put("leh", FOR);
         keywords.put("zlich", NULL);
         keywords.put("phunktsia", FUNCTION);
         keywords.put("hadpes", PRINT);
@@ -39,6 +38,7 @@ class Lexer {
         keywords.put("super", SUPER);
         keywords.put("mish", VAR); //mishtaneh
         keywords.put("bezman", WHILE);
+        keywords.put("leh", FOR);
     }
 
     public List<Token> scanTokens() {
@@ -53,16 +53,36 @@ class Lexer {
     private void scanToken() {
         char c = advance();
         switch (c) {
-            case '(': addToken(LEFT_PAREN); break;
-            case ')': addToken(RIGHT_PAREN); break;
-            case '{': addToken(LEFT_BRACE); break;
-            case '}': addToken(RIGHT_BRACE); break;
-            case ',': addToken(COMMA); break;
-            case '.': addToken(DOT); break;
-            case '-': addToken(MINUS); break;
-            case '+': addToken(PLUS); break;
-            case ';': addToken(SEMICOLON); break;
-            case '*': addToken(STAR); break;
+            case '(':
+                addToken(LEFT_PAREN);
+                break;
+            case ')':
+                addToken(RIGHT_PAREN);
+                break;
+            case '{':
+                addToken(LEFT_BRACE);
+                break;
+            case '}':
+                addToken(RIGHT_BRACE);
+                break;
+            case ',':
+                addToken(COMMA);
+                break;
+            case '.':
+                addToken(DOT);
+                break;
+            case '-':
+                addToken(MINUS);
+                break;
+            case '+':
+                addToken(PLUS);
+                break;
+            case ';':
+                addToken(SEMICOLON);
+                break;
+            case '*':
+                addToken(STAR);
+                break;
 
             case '!':
                 addToken(match('=') ? BANG_EQUAL : BANG);
@@ -79,6 +99,8 @@ class Lexer {
             case '/':
                 if (match('/')) {
                     while (peek() != '\n' && !endOfFile()) advance();
+                } else if (match('*')) {
+                    while (peek() != '*' && peekFuture() != '/' && !endOfFile()) advance();
                 } else {
                     addToken(SLASH);
                 }

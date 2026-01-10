@@ -1,5 +1,0 @@
-mish variable = "test string"
-
-eim (variable == "123") {
-
-}

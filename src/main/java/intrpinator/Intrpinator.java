@@ -14,7 +14,7 @@ public class Intrpinator {
     static boolean errorFlag = false;
     public static void main(String[] args) throws IOException {
         // for testing:
-        runFile("D:\\Users\\GAI\\dev\\java\\Interpertinator\\src\\main\\resources\\testRead.txt");
+        runFile("D:\\Users\\GAI\\dev\\java\\Interpertinator\\src\\main\\misc\\testRead.txt");
 
 //        if (args.length > 1) {
 //            System.exit(64);
