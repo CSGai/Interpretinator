@@ -6,9 +6,7 @@ import static main.java.intrpinator.TokenType.*;
 
 class Parser {
     final private List<Token> scannedTokens;
-
     private int current_idx = 0;
-    private int line = 0;
 
     Parser(List<Token> scannedTokens) {
         this.scannedTokens = scannedTokens;

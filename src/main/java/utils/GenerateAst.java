@@ -5,20 +5,29 @@ import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 public class GenerateAst {
     public static void main(String[] args) throws IOException {
         String outputDir = "./src/main/java/utils";
 
+        // old grammer
+//        defineAst(outputDir, "Expr", Arrays.asList(
+//                "Binary   : Expr left, Token operator, Expr right",
+//                "Grouping : Expr expression",
+//                "Literal  : Object value",
+//                "Unary    : Token operator, Expr right"
+//        ));
+
         defineAst(outputDir, "Expr", Arrays.asList(
-                "Binary   : Expr left, Token operator, Expr right",
-                "Grouping : Expr expression",
-                "Literal  : Object value",
-                "Unary    : Token operator, Expr right"
+                "Binary     : Expr left, Token operator, Expr right",
+                "",
+                ""
         ));
     }
 
-    private static void defineAst(String outputDir, String baseName, List<String> types) throws IOException {
+    private static void defineAst(String outputDir, String baseName,
+                                  List<String> types) throws IOException {
         String path = outputDir + "/" + baseName + ".java";
         PrintWriter writer = new PrintWriter(path, StandardCharsets.UTF_8);
 
