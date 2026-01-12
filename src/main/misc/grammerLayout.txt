@@ -1,16 +1,16 @@
-# Initial Grammer
-expression -> literal | unary | binary | grouping ;
-literal    -> NUMBER | STRING | "null" | "true" | "false" ;
-grouping   -> "(" expression ")" ;
-unary      -> ( "-" | "!" ) expression ;
-binary     -> expression operator expression ;
-operator   -> "==" | "!=" | "<" | "<=" | ">" | ">=" | "+"  | "-"  | "*" | "/" ;
+# class structure + Grammer
+expression -> literal | unary | binary | grouping ; CLASS
+literal    -> NUMBER | STRING | "null" | "true" | "false" ; OBJECT
+grouping   -> "(" expression ")" ; EXPR
+unary      -> ( "-" | "!" ) expression ; TOKEN, EXPR
+binary     -> expression operator expression ; EXPR TOKEN EXPR
+operator   -> "==" | "!=" | "<" | "<=" | ">" | ">=" | "+"  | "-"  | "*" | "/" ; TOKEN
 
-# New Grammer
-expression -> equality ;
-equality   -> comparison ( ( "!=" | "==" ) comparison )* ;
-comparison -> term ( ( ">" | ">=" | "<" | "<=" ) term )* ;
-term       -> factor ( ( "-" | "+" ) factor )* ;
-factor     -> unary ( ( "/" | "*" ) unary )* ;
-unary      -> ( "!" | "-" ) unary | primary ;
-primary    -> NUMBER | STRING | "true" | "false" | "null" | "(" expression ")" ;
+# parsing layer grammer
+expression -> equality ; EXPR
+equality   -> comparison ( ( "!=" | "==" ) comparison )* ; EXPR, (TOKEN..., EXPR...)
+comparison -> term ( ( ">" | ">=" | "<" | "<=" ) term )* ; EXPR, (TOKEN..., EXPR...)
+term       -> factor ( ( "-" | "+" ) factor )* ; EXPR, (TOKEN..., EXPR...)
+factor     -> unary ( ( "/" | "*" ) unary )* ; EXPR, (TOKEN..., EXPR...)
+unary      -> ( "!" | "-" ) unary | primary ; TOKEN, EXPR
+primary    -> NUMBER | STRING | "true" | "false" | "null" | "(" expression ")" ; EXPR
