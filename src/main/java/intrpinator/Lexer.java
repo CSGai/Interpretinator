@@ -31,7 +31,7 @@ class Lexer {
         keywords.put("aheret", ELSE);
         keywords.put("lo-nachon", FALSE);
         keywords.put("nachon", TRUE);
-        keywords.put("zlich", NULL);
+        keywords.put("zilch", NULL);
         keywords.put("phunktsia", FUNCTION);
         keywords.put("hadpes", PRINT);
         keywords.put("hachzer", RETURN);
@@ -175,6 +175,7 @@ class Lexer {
         current_idx++;
         return true;
     }
+
     public char advance() {
         current_idx += 1;
         return source.charAt(current_idx - 1);
