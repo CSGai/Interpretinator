@@ -11,18 +11,11 @@ public class GenerateAst {
     public static void main(String[] args) throws IOException {
         String outputDir = "./src/main/java/utils";
 
-        // old grammer
-//        defineAst(outputDir, "Expr", Arrays.asList(
-//                "Binary   : Expr left, Token operator, Expr right",
-//                "Grouping : Expr expression",
-//                "Literal  : Object value",
-//                "Unary    : Token operator, Expr right"
-//        ));
-
         defineAst(outputDir, "Expr", Arrays.asList(
-                "Binary     : Expr left, Token operator, Expr right",
-                "",
-                ""
+                "Binary   : Expr left, Token operator, Expr right",
+                "Grouping : Expr expression",
+                "Literal  : Object value",
+                "Unary    : Token operator, Expr right"
         ));
     }
 
