@@ -55,6 +55,11 @@ public class Intrpinator {
     static void error(int line, String message) {
         report(line, "", message);
     }
+    static void error(Token token, String message) {
+        if (token.type == TokenType.EOF) report(token.line, " at end", message);
+        else report(token.line, token.lexeme, message);
+    }
+
     private static void report(int line, String location, String message) {
         System.err.println("[line " + line + "] Error" + location + ": " + message);
         errorFlag = true;

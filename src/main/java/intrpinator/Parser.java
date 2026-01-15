@@ -5,6 +5,8 @@ import java.util.List;
 import static main.java.intrpinator.TokenType.*;
 
 class Parser {
+    private static class ParseError extends RuntimeException {}
+
     final private List<Token> tokens;
     private int current_idx = 0;
 
@@ -12,10 +14,19 @@ class Parser {
         this.tokens = tokens;
     }
 
+    Expr parse() {
+        try {
+            expression();
+        } catch (ParseError error) {
+            return null;
+        }
+        return null;
+    }
+
+    // Hiearchy
     private Expr expression() {
         return equality();
     }
-
     private Expr equality() {
         Expr expr = comparison();
 
@@ -24,12 +35,62 @@ class Parser {
             Expr right = comparison();
             expr = new Expr.Binary(expr, operator, right);
         }
-
         return expr;
     }
-//    private Expr comperison() {
-//        ;
-//    }
+    private Expr comparison() {
+        Expr expr = term();
+
+        while (match(LESS, GREATER, LESS_EQUAL, GREATER_EQUAL)) {
+            Token operator = previous();
+            Expr right = term();
+            expr = new Expr.Binary(expr, operator, right);
+        }
+        return expr;
+    }
+    private Expr term() {
+        Expr expr = factor();
+
+        while (match(PLUS, MINUS)) {
+            Token operator = previous();
+            Expr right = factor();
+            expr = new Expr.Binary(expr, operator, right);
+        }
+        return expr;
+    }
+    private Expr factor() {
+        Expr expr = unary();
+
+        while (match(SLASH, STAR)) {
+            Token operator = previous();
+            Expr right = unary();
+            expr = new Expr.Binary(expr, operator, right);
+        }
+        return expr;
+    }
+    private Expr unary() {
+        if (match(MINUS, BANG)) {
+            Token operator = previous();
+            Expr expr = unary();
+            return new Expr.Unary(operator, expr);
+        }
+        return primary();
+    }
+    private Expr primary() {
+        Token token = peek();
+
+        switch (token.type) {
+            case TRUE: advance(); return new Expr.Literal(true);
+            case FALSE: advance(); return new Expr.Literal(false);
+            case NULL: advance(); return new Expr.Literal(null);
+            case NUMBER, STRING: advance(); return new Expr.Literal(token.literal);
+            case LEFT_PAREN:
+                Expr expr = expression();
+                consume(RIGHT_PAREN, "Expect ')' after expression");
+                return new Expr.Grouping(expr);
+            default:
+                throw error(peek(), "Expect expression.");
+        }
+    }
 
     // consume
     private boolean match(TokenType... targets) {
@@ -46,12 +107,23 @@ class Parser {
         return result;
     }
 
+    private Token consume(TokenType endToken, String message) {
+        if (!endOfFile() && endToken == peek().type) return advance();
+
+        throw error(peek(), message);
+    }
+
     private Token advance() {
-        if (endOfFile()) current_idx++;
+        if (!endOfFile()) current_idx++;
         return previous();
     }
 
+
     // non-consume
+    private boolean endOfFile() {
+        return peek().type == EOF;
+    }
+
     private Token peek() {
         return tokens.get(current_idx);
     }
@@ -60,8 +132,30 @@ class Parser {
         return tokens.get(current_idx - 1);
     }
 
-    private boolean endOfFile() {
-        return peek().type == EOF;
+    // error handeling
+    private ParseError error(Token token, String message) {
+        Intrpinator.error(token, message);
+        return new ParseError();
     }
 
+    private void synchronize() {
+        advance();
+
+        while (!endOfFile()) {
+            if (previous().type == SEMICOLON) return;
+
+            switch (peek().type) {
+                case CLASS:
+                case FUNCTION:
+                case VAR:
+                case FOR:
+                case IF:
+                case WHILE:
+                case PRINT:
+                case RETURN:
+                    return;
+            }
+            advance();
+        }
+    }
 }
