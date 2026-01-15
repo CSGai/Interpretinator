@@ -23,7 +23,7 @@ class Parser {
         return null;
     }
 
-    // Hiearchy
+    // Heiarchy
     private Expr expression() {
         return equality();
     }
