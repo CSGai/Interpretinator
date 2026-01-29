@@ -158,16 +158,6 @@ class Lexer {
 
     // HELPER FUNCTIONS
 
-    // non-consume
-    private char peek() {
-        if (endOfFile()) return '\0';
-        return source.charAt(current_idx);
-    }
-    private char peekFuture() {
-        if (current_idx + 1 >= source.length()) return '\0';
-        return source.charAt(current_idx + 1);
-    }
-
     // consume
     private boolean match(char c) {
         if (endOfFile()) return false;
@@ -179,6 +169,16 @@ class Lexer {
     public char advance() {
         current_idx += 1;
         return source.charAt(current_idx - 1);
+    }
+
+    // non-consume
+    private char peek() {
+        if (endOfFile()) return '\0';
+        return source.charAt(current_idx);
+    }
+    private char peekFuture() {
+        if (current_idx + 1 >= source.length()) return '\0';
+        return source.charAt(current_idx + 1);
     }
 
     // tokens

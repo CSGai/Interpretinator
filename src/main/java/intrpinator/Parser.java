@@ -25,14 +25,16 @@ class Parser {
     // Heiarchy
     private Expr expression() {
         // extra comma logic for blocks
+        return sequence();
+    }
+    private Expr sequence() {
         Expr expr = equality();
 
-//        while (match(COMMA)) {
-//            Token comma = previous();
-//            Expr right = expression();
-//            expr = new Expr.Binary(expr, comma, right);
-//        }
-
+        while (match(COMMA)) {
+            Token comma = previous();
+            Expr right = equality();
+            expr = new Expr.Binary(expr, comma, right);
+        }
         return expr;
     }
     private Expr equality() {

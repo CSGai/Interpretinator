@@ -7,8 +7,8 @@ binary     -> expression operator expression ; EXPR TOKEN EXPR
 operator   -> "==" | "!=" | "<" | "<=" | ">" | ">=" | "+"  | "-"  | "*" | "/" ; TOKEN
 
 # parsing layer grammer
-expression -> equality ; EXPR
-expression -> expression ( ( "," ) expression)* ; EXPR, (TOKEN, EXPR)...
+expression -> block ; EXPR
+block      -> equality ( ( "," ) equality)* ; EXPR, (TOKEN, EXPR)...
 equality   -> comparison ( ( "!=" | "==" ) comparison )* ; EXPR, (TOKEN..., EXPR...)
 comparison -> term ( ( ">" | ">=" | "<" | "<=" ) term )* ; EXPR, (TOKEN..., EXPR...)
 term       -> factor ( ( "-" | "+" ) factor )* ; EXPR, (TOKEN..., EXPR...)
