@@ -61,9 +61,9 @@ class Lexer {
             case ',': addToken(COMMA); break;
             case '.': addToken(DOT); break;
             case ';': addToken(SEMICOLON); break;
-            case ':': addToken(COLON);
+            case ':': addToken(COLON); break;
             // boolean
-            case '?': addToken(QUESTION);
+            case '?': addToken(QUESTION); break;
             case '!': addToken(match('=') ? BANG_EQUAL : BANG); break;
             case '=': addToken(match('=') ? EQUAL_EQUAL : EQUAL); break;
             case '<': addToken(match('=') ? LESS_EQUAL : LESS); break;

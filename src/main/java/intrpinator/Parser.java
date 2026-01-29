@@ -104,6 +104,10 @@ class Parser {
             case FALSE: advance(); return new Expr.Literal(false);
             case NULL: advance(); return new Expr.Literal(null);
             case NUMBER, STRING: advance(); return new Expr.Literal(token.literal);
+            // ################################################################
+            // TEMPRORAY JUST TO MAKE CODE RUN WITH NON NUMBERS AND STRINGS
+            case IDENTIFIER: advance(); return new Expr.Literal(token.lexeme);
+            // ################################################################
             case LEFT_PAREN:
                 Expr expr = expression();
                 consume(RIGHT_PAREN, "Expect ')' after expression");
@@ -130,7 +134,6 @@ class Parser {
 
     private Token consume(TokenType endToken, String message) {
         if (!endOfFile() && endToken == peek().type) return advance();
-
         throw error(peek(), message);
     }
 

@@ -51,6 +51,13 @@ class AstChallenge implements Expr.Visitor<String> {
         return parenthesize(expr.operator.lexeme, expr.right);
     }
 
+    @Override
+    public String visitTernaryExpr(Expr.Ternary expr) {
+        return parenthesize("if",expr.condition)
+                + parenthesize("then", expr.thenBranch)
+                + parenthesize("else", expr.elseBranch);
+    }
+
     private String parenthesize(String lexeme, Expr... exprs) {
         StringBuilder builder = new StringBuilder();
 
