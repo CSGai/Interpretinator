@@ -1,4 +1,11 @@
-# class structure + Grammer
+# grammer notations
+*    - zero or more
++    - one or more
+?    - zero or one (optional)
+|    - or / alternation
+(...)- grouping
+
+# expression structure grammer
 expression -> literal | unary | binary | grouping ; CLASS
 literal    -> NUMBER | STRING | "null" | "true" | "false" ; OBJECT
 grouping   -> "(" expression ")" ; EXPR
@@ -8,10 +15,11 @@ operator   -> "==" | "!=" | "<" | "<=" | ">" | ">=" | "+"  | "-"  | "*" | "/" ; 
 
 # parsing layer grammer
 expression -> block ; EXPR
-block      -> equality ( ( "," ) equality)* ; EXPR, (TOKEN, EXPR)...
-equality   -> comparison ( ( "!=" | "==" ) comparison )* ; EXPR, (TOKEN..., EXPR...)
-comparison -> term ( ( ">" | ">=" | "<" | "<=" ) term )* ; EXPR, (TOKEN..., EXPR...)
-term       -> factor ( ( "-" | "+" ) factor )* ; EXPR, (TOKEN..., EXPR...)
-factor     -> unary ( ( "/" | "*" ) unary )* ; EXPR, (TOKEN..., EXPR...)
+sequance   -> ternary ( ( "," ) ternary )* ; EXPR, (TOKEN, EXPR)...
+ternary    -> equality ( ( "?" ) equality ( ":" ) equality )? ; EXPR, TOKEN, EXPR, TOKEN, EXPR
+equality   -> comparison ( ( "!=" | "==" ) comparison )* ; EXPR, (TOKEN, EXPR)...
+comparison -> term ( ( ">" | ">=" | "<" | "<=" ) term )* ; EXPR, (TOKEN, EXPR)...
+term       -> factor ( ( "-" | "+" ) factor )* ; EXPR, (TOKEN, EXPR)...
+factor     -> unary ( ( "/" | "*" ) unary )* ; EXPR, (TOKEN, EXPR)...
 unary      -> ( "!" | "-" ) unary | primary ; TOKEN, EXPR
 primary    -> NUMBER | STRING | "true" | "false" | "null" | "(" expression ")" ; EXPR

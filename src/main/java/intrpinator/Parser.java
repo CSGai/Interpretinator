@@ -28,12 +28,23 @@ class Parser {
         return sequence();
     }
     private Expr sequence() {
-        Expr expr = equality();
+        Expr expr = ternary();
 
         while (match(COMMA)) {
             Token comma = previous();
-            Expr right = equality();
+            Expr right = ternary();
             expr = new Expr.Binary(expr, comma, right);
+        }
+        return expr;
+    }
+    private Expr ternary() {
+        Expr expr = equality();
+
+        if (match(QUESTION)) {
+            Expr left = expression();
+            consume(COLON, "Expect : after 'then' branch");
+            Expr right = ternary();
+            expr = new Expr.Ternary(expr, left, right);
         }
         return expr;
     }
