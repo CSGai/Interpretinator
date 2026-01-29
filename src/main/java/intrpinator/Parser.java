@@ -27,11 +27,11 @@ class Parser {
         // extra comma logic for blocks
         Expr expr = equality();
 
-        while (match(COMMA)) {
-            Token comma = previous();
-            Expr right = expression();
-            expr = new Expr.Binary(expr, comma, right);
-        }
+//        while (match(COMMA)) {
+//            Token comma = previous();
+//            Expr right = expression();
+//            expr = new Expr.Binary(expr, comma, right);
+//        }
 
         return expr;
     }

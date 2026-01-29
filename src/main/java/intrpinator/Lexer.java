@@ -170,9 +170,8 @@ class Lexer {
 
     // consume
     private boolean match(char c) {
-        if (!endOfFile()) return false;
-        boolean result = source.charAt(current_idx+1) != c;
-        if (!result) return false;
+        if (endOfFile()) return false;
+        if (peek() != c) return false;
         current_idx++;
         return true;
     }
