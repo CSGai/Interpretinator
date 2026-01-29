@@ -16,11 +16,10 @@ class Parser {
 
     Expr parse() {
         try {
-            expression();
+            return expression();
         } catch (ParseError error) {
             return null;
         }
-        return null;
     }
 
     // Heiarchy
@@ -117,7 +116,6 @@ class Parser {
         if (!endOfFile()) current_idx++;
         return previous();
     }
-
 
     // non-consume
     private boolean endOfFile() {

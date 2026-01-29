@@ -170,7 +170,7 @@ class Lexer {
 
     // consume
     private boolean match(char c) {
-        boolean result = endOfFile() || source.charAt(current_idx + 1) != c;
+        boolean result = !endOfFile() || source.charAt(current_idx) != c;
         if (!result) return false;
         current_idx++;
         return true;

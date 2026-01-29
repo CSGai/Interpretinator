@@ -1,0 +1,7 @@
+mish variable = "test string test2";
+
+eim (variable == "123") {
+    print("blarg");
+    /*hello*/
+}
+

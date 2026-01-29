@@ -48,8 +48,17 @@ public class Intrpinator {
     private static void run(String sourceCode) throws RuntimeException {
         if (errorFlag) System.exit(65);
         Lexer lex = new Lexer(sourceCode);
-        List<Token> Tokens =  lex.scanTokens();
-        for ( Token t : Tokens) System.out.println(t);
+        List<Token> tokens =  lex.scanTokens();
+        for (Token token : tokens) {
+            System.out.println(token);
+        }
+        Parser parser = new Parser(tokens);
+        Expr expression = parser.parse();
+
+        // Stop if there was a syntax error.
+        if (errorFlag) return;
+
+        System.out.println(new AstPrinter().print(expression));
     }
 
     static void error(int line, String message) {
@@ -59,7 +68,6 @@ public class Intrpinator {
         if (token.type == TokenType.EOF) report(token.line, " at end", message);
         else report(token.line, token.lexeme, message);
     }
-
     private static void report(int line, String location, String message) {
         System.err.println("[line " + line + "] Error" + location + ": " + message);
         errorFlag = true;
