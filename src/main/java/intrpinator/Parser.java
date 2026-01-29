@@ -24,7 +24,16 @@ class Parser {
 
     // Heiarchy
     private Expr expression() {
-        return equality();
+        // extra comma logic for blocks
+        Expr expr = equality();
+
+        while (match(COMMA)) {
+            Token comma = previous();
+            Expr right = expression();
+            expr = new Expr.Binary(expr, comma, right);
+        }
+
+        return expr;
     }
     private Expr equality() {
         Expr expr = comparison();
@@ -87,7 +96,7 @@ class Parser {
                 consume(RIGHT_PAREN, "Expect ')' after expression");
                 return new Expr.Grouping(expr);
             default:
-                throw error(peek(), "Expect expression.");
+                throw error(peek(), "Expected expression.");
         }
     }
 

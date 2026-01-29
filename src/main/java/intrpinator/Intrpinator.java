@@ -69,7 +69,7 @@ public class Intrpinator {
         else report(token.line, token.lexeme, message);
     }
     private static void report(int line, String location, String message) {
-        System.err.println("[line " + line + "] Error" + location + ": " + message);
+        System.err.println("[line " + line + "] Error at " + location + " -> " + message);
         errorFlag = true;
     }
 }

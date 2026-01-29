@@ -8,6 +8,7 @@ operator   -> "==" | "!=" | "<" | "<=" | ">" | ">=" | "+"  | "-"  | "*" | "/" ; 
 
 # parsing layer grammer
 expression -> equality ; EXPR
+expression -> expression ( ( "," ) expression)* ; EXPR, (TOKEN, EXPR)...
 equality   -> comparison ( ( "!=" | "==" ) comparison )* ; EXPR, (TOKEN..., EXPR...)
 comparison -> term ( ( ">" | ">=" | "<" | "<=" ) term )* ; EXPR, (TOKEN..., EXPR...)
 term       -> factor ( ( "-" | "+" ) factor )* ; EXPR, (TOKEN..., EXPR...)
