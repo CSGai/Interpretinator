@@ -1,6 +1,8 @@
 package main.java.intrpinator;
 
 import java.util.List;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 import static main.java.intrpinator.TokenType.*;
 
@@ -24,10 +26,11 @@ class Parser {
 
     // Heiarchy
     private Expr expression() {
-        // extra comma logic for blocks
         return sequence();
     }
     private Expr sequence() {
+        missingLHO(this::ternary, COMMA);
+
         Expr expr = ternary();
 
         while (match(COMMA)) {
@@ -38,20 +41,25 @@ class Parser {
         return expr;
     }
     private Expr ternary() {
+        missingLHO(this::equality, QUESTION);
+
         Expr expr = equality();
 
         if (match(QUESTION)) {
             Expr left = expression();
-            consume(COLON, "Expect : after 'then' branch");
+            consume(COLON, "Expect : after 'then' branch of ternary");
             Expr right = ternary();
             expr = new Expr.Ternary(expr, left, right);
         }
         return expr;
     }
     private Expr equality() {
+        TokenType[] ops = {BANG_EQUAL, EQUAL_EQUAL};
+        missingLHO(this::comparison, ops);
+
         Expr expr = comparison();
 
-        while (match(BANG_EQUAL, EQUAL_EQUAL)) {
+        while (match(ops)) {
             Token operator = previous();
             Expr right = comparison();
             expr = new Expr.Binary(expr, operator, right);
@@ -59,9 +67,12 @@ class Parser {
         return expr;
     }
     private Expr comparison() {
+        TokenType[] ops = {LESS, GREATER, LESS_EQUAL, GREATER_EQUAL};
+        missingLHO(this::term, ops);
+
         Expr expr = term();
 
-        while (match(LESS, GREATER, LESS_EQUAL, GREATER_EQUAL)) {
+        while (match(ops)) {
             Token operator = previous();
             Expr right = term();
             expr = new Expr.Binary(expr, operator, right);
@@ -69,9 +80,12 @@ class Parser {
         return expr;
     }
     private Expr term() {
+        TokenType[] ops = {PLUS, MINUS};
+        missingLHO(this::factor, ops);
+
         Expr expr = factor();
 
-        while (match(PLUS, MINUS)) {
+        while (match(ops)) {
             Token operator = previous();
             Expr right = factor();
             expr = new Expr.Binary(expr, operator, right);
@@ -79,9 +93,12 @@ class Parser {
         return expr;
     }
     private Expr factor() {
+        TokenType[] ops = {SLASH, STAR};
+        missingLHO(this::unary, ops);
+
         Expr expr = unary();
 
-        while (match(SLASH, STAR)) {
+        while (match(ops)) {
             Token operator = previous();
             Expr right = unary();
             expr = new Expr.Binary(expr, operator, right);
@@ -89,7 +106,8 @@ class Parser {
         return expr;
     }
     private Expr unary() {
-        if (match(MINUS, BANG)) {
+        TokenType[] ops = {MINUS, BANG};
+        if (match(ops)) {
             Token operator = previous();
             Expr expr = unary();
             return new Expr.Unary(operator, expr);
@@ -118,6 +136,36 @@ class Parser {
     }
 
     // consume
+    private Token consume(TokenType endToken, String message) {
+        if (!endOfFile() && endToken == peek().type) return advance();
+        throw error(peek(), message);
+    }
+
+    private Token advance() {
+        if (!endOfFile()) current_idx++;
+        return previous();
+    }
+
+    // non-consume
+    private Token peek() {
+        return tokens.get(current_idx);
+    }
+
+    private Token previous() {
+        return tokens.get(current_idx - 1);
+    }
+
+
+    // special methods
+    private boolean endOfFile() {
+        return peek().type == EOF;
+    }
+
+    private void missingLHO(Supplier<Expr> nextInHierarchy, TokenType... types) {
+        if (match(types)) error(previous(), "Missing left-hand operand");
+        nextInHierarchy.get();
+    }
+
     private boolean match(TokenType... targets) {
         if (endOfFile()) return false;
 
@@ -130,29 +178,6 @@ class Parser {
         }
         if (result) current_idx++;
         return result;
-    }
-
-    private Token consume(TokenType endToken, String message) {
-        if (!endOfFile() && endToken == peek().type) return advance();
-        throw error(peek(), message);
-    }
-
-    private Token advance() {
-        if (!endOfFile()) current_idx++;
-        return previous();
-    }
-
-    // non-consume
-    private boolean endOfFile() {
-        return peek().type == EOF;
-    }
-
-    private Token peek() {
-        return tokens.get(current_idx);
-    }
-
-    private Token previous() {
-        return tokens.get(current_idx - 1);
     }
 
     // error handeling
