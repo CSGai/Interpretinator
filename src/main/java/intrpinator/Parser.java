@@ -1,7 +1,6 @@
 package main.java.intrpinator;
 
 import java.util.List;
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 import static main.java.intrpinator.TokenType.*;
@@ -29,9 +28,7 @@ class Parser {
         return sequence();
     }
     private Expr sequence() {
-        missingLHO(this::ternary, COMMA);
-
-        Expr expr = ternary();
+        Expr expr = checkMissingLHO(this::ternary, COMMA);
 
         while (match(COMMA)) {
             Token comma = previous();
@@ -41,9 +38,7 @@ class Parser {
         return expr;
     }
     private Expr ternary() {
-        missingLHO(this::equality, QUESTION);
-
-        Expr expr = equality();
+        Expr expr = checkMissingLHO(this::equality, QUESTION);
 
         if (match(QUESTION)) {
             Expr left = expression();
@@ -55,9 +50,7 @@ class Parser {
     }
     private Expr equality() {
         TokenType[] ops = {BANG_EQUAL, EQUAL_EQUAL};
-        missingLHO(this::comparison, ops);
-
-        Expr expr = comparison();
+        Expr expr = checkMissingLHO(this::comparison, ops);
 
         while (match(ops)) {
             Token operator = previous();
@@ -68,9 +61,7 @@ class Parser {
     }
     private Expr comparison() {
         TokenType[] ops = {LESS, GREATER, LESS_EQUAL, GREATER_EQUAL};
-        missingLHO(this::term, ops);
-
-        Expr expr = term();
+        Expr expr = checkMissingLHO(this::term, ops);
 
         while (match(ops)) {
             Token operator = previous();
@@ -81,9 +72,7 @@ class Parser {
     }
     private Expr term() {
         TokenType[] ops = {PLUS, MINUS};
-        missingLHO(this::factor, ops);
-
-        Expr expr = factor();
+        Expr expr = checkMissingLHO(this::factor, ops);
 
         while (match(ops)) {
             Token operator = previous();
@@ -94,9 +83,7 @@ class Parser {
     }
     private Expr factor() {
         TokenType[] ops = {SLASH, STAR};
-        missingLHO(this::unary, ops);
-
-        Expr expr = unary();
+        Expr expr = checkMissingLHO(this::unary, ops);
 
         while (match(ops)) {
             Token operator = previous();
@@ -155,15 +142,14 @@ class Parser {
         return tokens.get(current_idx - 1);
     }
 
-
     // special methods
     private boolean endOfFile() {
         return peek().type == EOF;
     }
 
-    private void missingLHO(Supplier<Expr> nextInHierarchy, TokenType... types) {
+    private Expr checkMissingLHO(Supplier<Expr> nextInHierarchy, TokenType... types) {
         if (match(types)) error(previous(), "Missing left-hand operand");
-        nextInHierarchy.get();
+        return nextInHierarchy.get();
     }
 
     private boolean match(TokenType... targets) {
