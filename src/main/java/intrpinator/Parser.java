@@ -28,14 +28,14 @@ class Parser {
         return sequence();
     }
     private Expr sequence() {
-        Expr expr = checkMissingLHO(this::ternary, COMMA);
+        Expr lExpr = checkMissingLHO(this::ternary, COMMA);
 
         while (match(COMMA)) {
             Token comma = previous();
-            Expr right = ternary();
-            expr = new Expr.Binary(expr, comma, right);
+            Expr rExpr = ternary();
+            lExpr = new Expr.Binary(lExpr, comma, rExpr);
         }
-        return expr;
+        return lExpr;
     }
     private Expr ternary() {
         Expr expr = checkMissingLHO(this::equality, QUESTION);
