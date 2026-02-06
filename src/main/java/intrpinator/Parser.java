@@ -32,7 +32,7 @@ class Parser {
 
         while (match(COMMA)) {
             Token operator = previous();
-            Expr rExpr = ternary();
+            Expr rExpr = sequence();
             lExpr = new Expr.Binary(lExpr, operator, rExpr);
         }
         return lExpr;

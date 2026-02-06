@@ -2,17 +2,16 @@ package main.java.intrpinator;
 
 
 class Interpreter implements Expr.Visitor<Object>{
-
+    record CommaResults(Object... objects) {}
     void interpret(Expr expression) {
-    try {
-        Object value = eval(expression);
-        System.out.println(stringify(value));
+        try {
+            Object value = eval(expression);
+            System.out.println(stringify(value));
+        }
+        catch (RuntimeError error) {
+            Intrpinator.runtimeError(error);
+        }
     }
-    catch (RuntimeError error) {
-        Intrpinator.runtimeError(error);
-    }
-    }
-
 
     // visitors
     @Override
@@ -65,15 +64,23 @@ class Interpreter implements Expr.Visitor<Object>{
                 throw new RuntimeError(expr.operator,"Operands must be two numbers or a string and a number.");
             case SLASH: checkNumberOperands(expr.operator, left, right); return (double)left / (double)right;
             // comparison
-            case LESS: checkNumberOperands(expr.operator, left, right); return (double)left > (double)right;
-            case GREATER: checkNumberOperands(expr.operator, left, right); return (double)left < (double)right;
-            case LESS_EQUAL: checkNumberOperands(expr.operator, left, right); return (double)left >= (double)right;
-            case GREATER_EQUAL: checkNumberOperands(expr.operator, left, right); return (double)left <= (double)right;
+            case LESS: checkNumberOperands(expr.operator, left, right); return (double)left < (double)right;
+            case GREATER: checkNumberOperands(expr.operator, left, right); return (double)left > (double)right;
+            case LESS_EQUAL: checkNumberOperands(expr.operator, left, right); return (double)left <= (double)right;
+            case GREATER_EQUAL: checkNumberOperands(expr.operator, left, right); return (double)left >= (double)right;
             // equality
             case EQUAL_EQUAL: return equality(left, right);
             case BANG_EQUAL: return !equality(left, right);
             // special
-            case COMMA: return right;
+//            case COMMA: return right;
+            case COMMA:
+                if (left instanceof Object[] leftArray) {
+                    Object[] result = new Object[leftArray.length + 1];
+                    System.arraycopy(leftArray, 0, result, 0, leftArray.length);
+                    result[result.length - 1] = right;
+                    return result;
+                }
+                return new Object[] { left, right };
             default: return null;
         }
     }
@@ -104,13 +111,28 @@ class Interpreter implements Expr.Visitor<Object>{
     }
 
     private String stringify(Object obj) {
-        if (obj == null) return "zilch";
-        String strObj = obj.toString();
-        if (obj instanceof Double) {
-            if (strObj.endsWith(".0")) strObj = strObj.substring(0, strObj.length() -2);
-            return strObj;
+        switch (obj) {
+            case null -> {
+                return "zilch";
+            }
+            case Object[] sequence -> {
+                StringBuilder builder = new StringBuilder();
+                for (int i = 0; i < sequence.length; i++) {
+                    builder.append(stringify(sequence[i]));
+                    if (i < sequence.length - 1) builder.append(", ");
+                }
+                return builder.toString();
+            }
+            case Double v -> {
+                String text = obj.toString();
+                if (text.endsWith(".0")) text = text.substring(0, text.length() - 2);
+                return text;
+            }
+            default -> {
+                return obj.toString();
+            }
         }
-        return strObj;
+
     }
     private Object eval(Expr expr) {
         return expr.accept(this);
