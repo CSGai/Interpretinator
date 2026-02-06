@@ -7,11 +7,14 @@ import java.nio.file.Paths;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.util.Arrays;
 import java.util.List;
 
 public class Intrpinator {
     static boolean errorFlag = false;
+    static boolean hadRuntimeError = false;
+
+    private static final Interpreter interpreter = new Interpreter();
+
     public static void main(String[] args) throws IOException {
         // for testing:
         runFile("D:\\Users\\GAI\\dev\\java\\Interpertinator\\src\\main\\misc\\testRead.txt");
@@ -43,22 +46,31 @@ public class Intrpinator {
     private static void runFile(String path) throws IOException {
         byte[] bytes = Files.readAllBytes(Paths.get(path));
         run(new String(bytes, StandardCharsets.UTF_8));
+        if (errorFlag) System.exit(65);
+        if (hadRuntimeError) System.exit(70);
     }
 
     private static void run(String sourceCode) throws RuntimeException {
         if (errorFlag) System.exit(65);
+
+        // Scanner
         Lexer lex = new Lexer(sourceCode);
         List<Token> tokens =  lex.scanTokens();
         for (Token token : tokens) {
             System.out.println(token);
         }
+
+        // Parser
         Parser parser = new Parser(tokens);
         Expr expression = parser.parse();
 
         // Stop if there was a syntax error.
         if (errorFlag) return;
 
-        System.out.println(new AstPrinter().print(expression));
+        // Interpreter
+        interpreter.interpret(expression);
+
+//        System.out.println(new AstPrinter().print(expression));
     }
 
     static void error(int line, String message) {
@@ -71,5 +83,10 @@ public class Intrpinator {
     private static void report(int line, String location, String message) {
         System.err.println("[line " + line + "] Error at '" + location + "' -> " + message);
         errorFlag = true;
+    }
+
+    static void runtimeError(RuntimeError error) {
+        System.err.println(error.getMessage() + "\n[line " + error.token.line + "]");
+        hadRuntimeError = true;
     }
 }
