@@ -31,9 +31,9 @@ class Parser {
         Expr lExpr = checkMissingLHO(this::ternary, COMMA);
 
         while (match(COMMA)) {
-            Token comma = previous();
+            Token operator = previous();
             Expr rExpr = ternary();
-            lExpr = new Expr.Binary(lExpr, comma, rExpr);
+            lExpr = new Expr.Binary(lExpr, operator, rExpr);
         }
         return lExpr;
     }
@@ -127,7 +127,6 @@ class Parser {
         if (!endOfFile() && endToken == peek().type) return advance();
         throw error(peek(), message);
     }
-
     private Token advance() {
         if (!endOfFile()) current_idx++;
         return previous();
@@ -137,7 +136,6 @@ class Parser {
     private Token peek() {
         return tokens.get(current_idx);
     }
-
     private Token previous() {
         return tokens.get(current_idx - 1);
     }
@@ -146,7 +144,6 @@ class Parser {
     private boolean endOfFile() {
         return peek().type == EOF;
     }
-
     private Expr checkMissingLHO(Supplier<Expr> nextInHierarchy, TokenType... types) {
         if (match(types)) error(previous(), "Missing left-hand operand");
         return nextInHierarchy.get();
@@ -171,7 +168,6 @@ class Parser {
         Intrpinator.error(token, message);
         return new ParseError();
     }
-
     private void synchronize() {
         advance();
 

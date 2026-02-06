@@ -1,6 +1,5 @@
 package main.java.intrpinator;
 
-import java.util.function.DoubleBinaryOperator;
 
 class Interpreter implements Expr.Visitor<Object>{
 
@@ -44,10 +43,12 @@ class Interpreter implements Expr.Visitor<Object>{
         if (Truthful(condition)) return then;
         return otherwise;
     }
+
     @Override
     public Object visitBinaryExpr(Expr.Binary expr) {
         Object left = eval(expr.left);
         Object right = eval(expr.right);
+
         switch (expr.operator.type) {
             // math
             case PLUS:
@@ -71,6 +72,8 @@ class Interpreter implements Expr.Visitor<Object>{
             // equality
             case EQUAL_EQUAL: return equality(left, right);
             case BANG_EQUAL: return !equality(left, right);
+            // special
+            case COMMA: return right;
             default: return null;
         }
     }
@@ -100,9 +103,6 @@ class Interpreter implements Expr.Visitor<Object>{
         };
     }
 
-    private Object eval(Expr expr) {
-        return expr.accept(this);
-    }
     private String stringify(Object obj) {
         if (obj == null) return "zilch";
         String strObj = obj.toString();
@@ -111,5 +111,8 @@ class Interpreter implements Expr.Visitor<Object>{
             return strObj;
         }
         return strObj;
+    }
+    private Object eval(Expr expr) {
+        return expr.accept(this);
     }
 }
