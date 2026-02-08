@@ -114,6 +114,7 @@ class Parser {
             case IDENTIFIER: advance(); return new Expr.Literal(token.lexeme);
             // ################################################################
             case LEFT_PAREN:
+                advance();
                 Expr expr = expression();
                 consume(RIGHT_PAREN, "Expect ')' after expression");
                 return new Expr.Grouping(expr);
