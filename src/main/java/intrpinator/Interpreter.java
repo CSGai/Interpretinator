@@ -52,7 +52,11 @@ class Interpreter implements Expr.Visitor<Object>{
             // math
             case PLUS:
                 if (left instanceof Double l && right instanceof Double r) return l + r;
-                if (left instanceof String && right instanceof String) return "" + left + right;
+                if (left instanceof String || right instanceof String) {
+                    left = left instanceof Double ? ((Double) left).intValue() : left;
+                    right = right instanceof Double ? ((Double) right).intValue() : right;
+                    return String.valueOf(left) + right;
+                }
                 throw new RuntimeError(expr.operator,"Operands must be two numbers or two strings.");
             case MINUS:
                 if (left instanceof Double l && right instanceof Double r) return l - r;

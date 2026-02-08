@@ -17,7 +17,7 @@ public class Intrpinator {
 
     public static void main(String[] args) throws IOException {
         // for testing:
-        runFile("D:\\Users\\GAI\\dev\\java\\Interpertinator\\src\\main\\misc\\testRead.txt");
+        runFile("src/main/misc/testRead.txt");
 
 //        if (args.length > 1) {
 //            System.exit(64);
