@@ -22,6 +22,7 @@ class Interpreter implements Expr.Visitor<Object>{
     public Object visitGroupingExpr(Expr.Grouping expr) {
         return eval(expr.expression);
     }
+
     @Override
     public Object visitUnaryExpr(Expr.Unary expr) {
         Object right = eval(expr.right);
@@ -52,7 +53,11 @@ class Interpreter implements Expr.Visitor<Object>{
             // math
             case PLUS:
                 if (left instanceof Double l && right instanceof Double r) return l + r;
-                if (left instanceof String && right instanceof String) return "" + left + right;
+                if (left instanceof String || right instanceof String) {
+                    left = left instanceof Double ? ((Double) left).intValue() : left;
+                    right = right instanceof Double ? ((Double) right).intValue() : right;
+                    return String.valueOf(left) + right;
+                }
                 throw new RuntimeError(expr.operator,"Operands must be two numbers or two strings.");
             case MINUS:
                 if (left instanceof Double l && right instanceof Double r) return l - r;
@@ -62,7 +67,10 @@ class Interpreter implements Expr.Visitor<Object>{
                 if (left instanceof Double l && right instanceof Double r) return l * r;
                 if (left instanceof String && right instanceof Double) return ((String) left).repeat((int)right);
                 throw new RuntimeError(expr.operator,"Operands must be two numbers or a string and a number.");
-            case SLASH: checkNumberOperands(expr.operator, left, right); return (double)left / (double)right;
+            case SLASH:
+                checkNumberOperands(expr.operator, left, right);
+                if (((Double)right).intValue() == 0) throw new RuntimeError(expr.operator, "can't devide by 0.");
+                return (double)left / (double)right;
             // comparison
             case LESS: checkNumberOperands(expr.operator, left, right); return (double)left < (double)right;
             case GREATER: checkNumberOperands(expr.operator, left, right); return (double)left > (double)right;

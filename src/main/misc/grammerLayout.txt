@@ -23,3 +23,10 @@ term       -> factor ( ( "-" | "+" ) factor )* ; EXPR, (TOKEN, EXPR)...
 factor     -> unary ( ( "/" | "*" ) unary )* ; EXPR, (TOKEN, EXPR)...
 unary      -> ( "!" | "-" ) unary | primary ; TOKEN, EXPR
 primary    -> NUMBER | STRING | "true" | "false" | "null" | "(" expression ")" ; EXPR
+
+# top level grammer
+program    -> statement* EOF ;
+statement  -> exprStmt | printStmt ;
+
+exprStmt   -> expression ";" ;
+printStmt  -> "hadpes" expression ";" ;
