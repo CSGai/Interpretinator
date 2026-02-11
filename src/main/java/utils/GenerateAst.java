@@ -10,7 +10,7 @@ public class GenerateAst {
     public static void main(String[] args) throws IOException {
         String outputDir = "./src/main/java/utils";
 
-        defineAst(outputDir, "Expr", Arrays.asList(
+        defineAst(outputDir, "newExpr", Arrays.asList(
                 "Binary   : Expr left, Token operator, Expr right",
                 "Grouping : Expr expression",
                 "Literal  : Object value",
