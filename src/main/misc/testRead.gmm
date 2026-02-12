@@ -1,3 +1,4 @@
 mish test <- 5;
-//hadpes test==5?"10":"4";
 hadpes test;
+// blah blah blah commment
+hadpes "output: " + (test == 5 ? "10" : "4");
