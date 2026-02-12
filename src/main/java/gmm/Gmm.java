@@ -62,13 +62,13 @@ public class Gmm {
 
         // Parser
         Parser parser = new Parser(tokens);
-        Expr expression = parser.parse();
+        List<Stmt> statments = parser.parse();
 
         // Stop if there was a syntax error.
         if (errorFlag) return;
 
         // Interpreter
-        interpreter.interpret(expression);
+        interpreter.interpret(statments);
 
 //        System.out.println(new AstPrinter().print(expression));
     }

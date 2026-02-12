@@ -1,5 +1,6 @@
 package main.java.gmm;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -15,15 +16,36 @@ class Parser {
         this.tokens = tokens;
     }
 
-    Expr parse() {
-        try {
-            return expression();
-        } catch (ParseError error) {
-            return null;
+    List<Stmt> parse() {
+        List<Stmt> statements = new ArrayList<>();
+
+        while (!endOfFile()) {
+            statements.add(statement());
         }
+        return statements;
     }
 
-    // Heiarchy
+    /* -- Heiarchy -- */
+
+    // statements
+    private Stmt statement() {
+        if (match(PRINT)) return printStatement();
+
+        return expressionStatement();
+    }
+    private Stmt printStatement() {
+        Expr expr = expression();
+        consume(SEMICOLON, "Expect ; after statement");
+        return new Stmt.Print(expr);
+    }
+
+    private Stmt expressionStatement() {
+        Expr expr = expression();
+        consume(SEMICOLON, "Expect ';' after expression.");
+        return new Stmt.Expression(expr);
+    }
+
+    // expressions
     private Expr expression() {
         return sequence();
     }

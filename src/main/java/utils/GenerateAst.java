@@ -8,18 +8,19 @@ import java.util.List;
 
 public class GenerateAst {
     public static void main(String[] args) throws IOException {
-        String outputDir = "./src/main/java/utils";
+        String outputDir = "./src/main/java/gmm";
 
-        defineAst(outputDir, "newExpr", Arrays.asList(
+        defineAst(outputDir, "Expr", Arrays.asList(
                 "Binary   : Expr left, Token operator, Expr right",
                 "Grouping : Expr expression",
                 "Literal  : Object value",
                 "Unary    : Token operator, Expr right",
-                "Ternary  : Expr condition, Expr thenBranch, main.java.intrpinator.Expr elseBranch"
+                "Ternary  : Expr condition, Expr thenBranch, Expr elseBranch"
         ));
         defineAst(outputDir, "Stmt", Arrays.asList(
                 "Expression : Expr expression",
-                "Print     : Expr expression"
+                "Variable   : Token name, Expr initializer",
+                "Print      : Expr expression"
         ));
     }
 
@@ -27,7 +28,7 @@ public class GenerateAst {
         String path = outputDir + "/" + baseName + ".java";
         PrintWriter writer = new PrintWriter(path, StandardCharsets.UTF_8);
 
-        writer.println("package com.craftinginterpreters.lox;");
+        writer.println("package main.java.gmm;");
         writer.println();
         writer.println("import java.util.List;");
         writer.println();

@@ -1,19 +1,22 @@
 package main.java.gmm;
 
 
-class Interpreter implements Expr.Visitor<Object>{
-    record CommaResults(Object... objects) {}
-    void interpret(Expr expression) {
+import java.util.List;
+
+class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
+
+    void interpret(List<Stmt> statments) {
         try {
-            Object value = eval(expression);
-            System.out.println(stringify(value));
+            for ( Stmt statement : statments) {
+                execute(statement);
+            }
         }
         catch (RuntimeError error) {
             Gmm.runtimeError(error);
         }
     }
 
-    // visitors
+    // Expression visitors
     @Override
     public Object visitLiteralExpr(Expr.Literal expr) {
         return expr.value;
@@ -22,7 +25,6 @@ class Interpreter implements Expr.Visitor<Object>{
     public Object visitGroupingExpr(Expr.Grouping expr) {
         return eval(expr.expression);
     }
-
     @Override
     public Object visitUnaryExpr(Expr.Unary expr) {
         Object right = eval(expr.right);
@@ -43,7 +45,6 @@ class Interpreter implements Expr.Visitor<Object>{
         if (Truthful(condition)) return then;
         return otherwise;
     }
-
     @Override
     public Object visitBinaryExpr(Expr.Binary expr) {
         Object left = eval(expr.left);
@@ -80,20 +81,41 @@ class Interpreter implements Expr.Visitor<Object>{
             case EQUAL_EQUAL: return equality(left, right);
             case BANG_EQUAL: return !equality(left, right);
             // special
-//            case COMMA: return right;
-            case COMMA:
-                if (left instanceof Object[] leftArray) {
-                    Object[] result = new Object[leftArray.length + 1];
-                    System.arraycopy(leftArray, 0, result, 0, leftArray.length);
-                    result[result.length - 1] = right;
-                    return result;
-                }
-                return new Object[] { left, right };
+            case COMMA: return right;
+//            case COMMA:
+//                if (left instanceof Object[] leftArray) {
+//                    Object[] result = new Object[leftArray.length + 1];
+//                    System.arraycopy(leftArray, 0, result, 0, leftArray.length);
+//                    result[result.length - 1] = right;
+//                    return result;
+//                }
+//                return new Object[] { left, right };
             default: return null;
         }
     }
 
-    // Helper Methods
+    // Statement visitors
+    @Override
+    public Void visitExpressionStmt(Stmt.Expression stmt) {
+        eval(stmt.expression);
+        return null;
+    }
+
+    @Override
+    public Void visitVariableStmt(Stmt.Variable stmt) {
+        return null;
+    }
+
+    @Override
+    public Void visitPrintStmt(Stmt.Print stmt) {
+        Object val = eval(stmt.expression);
+        System.out.println(stringify(val));
+        return null;
+    }
+
+
+    //  -- Helper Methods --
+    // operand checks
     private void checkNumberOperand(Token operator, Object right) {
         if (right instanceof Double) return;
         throw new RuntimeError(operator, "Operand must be a number.");
@@ -102,7 +124,7 @@ class Interpreter implements Expr.Visitor<Object>{
         if (left instanceof Double && right instanceof Double) return;
         throw new RuntimeError(operator, "Operands must be numbers.");
     }
-
+    // mics checks
     private Boolean equality(Object left, Object right) {
         if (left == null & right == null) return true;
         if (left == null) return false;
@@ -118,31 +140,35 @@ class Interpreter implements Expr.Visitor<Object>{
         };
     }
 
+    // visitor helpers
+    private Object eval(Expr expr) {
+        return expr.accept(this);
+    }
+    private void execute(Stmt statement) {
+        statement.accept(this);
+    }
+
+    // misc
     private String stringify(Object obj) {
         switch (obj) {
-            case null -> {
-                return "zilch";
-            }
-            case Object[] sequence -> {
+            case null: return "zilch";
+
+            case Object[] sequence:
                 StringBuilder builder = new StringBuilder();
                 for (int i = 0; i < sequence.length; i++) {
                     builder.append(stringify(sequence[i]));
                     if (i < sequence.length - 1) builder.append(", ");
                 }
                 return builder.toString();
-            }
-            case Double v -> {
-                String text = obj.toString();
+
+            case Double v:
+                String text = v.toString();
                 if (text.endsWith(".0")) text = text.substring(0, text.length() - 2);
                 return text;
-            }
-            default -> {
-                return obj.toString();
-            }
+
+            default: return obj.toString();
         }
 
     }
-    private Object eval(Expr expr) {
-        return expr.accept(this);
-    }
+
 }

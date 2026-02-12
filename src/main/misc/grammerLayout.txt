@@ -13,6 +13,7 @@ unary      -> ( "-" | "!" ) expression ; TOKEN, EXPR
 binary     -> expression operator expression ; EXPR TOKEN EXPR
 operator   -> "==" | "!=" | "<" | "<=" | ">" | ">=" | "+"  | "-"  | "*" | "/" ; TOKEN
 
+
 # parsing layer grammer
 expression -> block ; EXPR
 sequance   -> ternary ( ( "," ) ternary )* ; EXPR, (TOKEN, EXPR)...
@@ -22,10 +23,15 @@ comparison -> term ( ( ">" | ">=" | "<" | "<=" ) term )* ; EXPR, (TOKEN, EXPR)..
 term       -> factor ( ( "-" | "+" ) factor )* ; EXPR, (TOKEN, EXPR)...
 factor     -> unary ( ( "/" | "*" ) unary )* ; EXPR, (TOKEN, EXPR)...
 unary      -> ( "!" | "-" ) unary | primary ; TOKEN, EXPR
-primary    -> NUMBER | STRING | "true" | "false" | "null" | "(" expression ")" ; EXPR
+primary    -> NUMBER | STRING | "true" | "false" | "null" | "(" expression ")" | IDENTIFIER ; EXPR
 
 # top level grammer
 program    -> statement* EOF ;
+program    -> declaration* EOF ;
+
+declaration-> varDecl | statement ;
+varDecl    -> "mish" IDENTIFIER ( "<-" expression )? ";" ;
+
 statement  -> exprStmt | printStmt ;
 
 exprStmt   -> expression ";" ;
