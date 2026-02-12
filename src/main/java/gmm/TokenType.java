@@ -1,4 +1,4 @@
-package main.java.intrpinator;
+package main.java.gmm;
 
 public enum TokenType {
     LEFT_PAREN, RIGHT_PAREN, LEFT_BRACE, RIGHT_BRACE,

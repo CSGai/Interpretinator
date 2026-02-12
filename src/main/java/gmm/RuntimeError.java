@@ -1,4 +1,4 @@
-package main.java.intrpinator;
+package main.java.gmm;
 
 class RuntimeError extends RuntimeException{
     final Token token;

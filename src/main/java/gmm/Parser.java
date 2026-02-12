@@ -1,9 +1,9 @@
-package main.java.intrpinator;
+package main.java.gmm;
 
 import java.util.List;
 import java.util.function.Supplier;
 
-import static main.java.intrpinator.TokenType.*;
+import static main.java.gmm.TokenType.*;
 
 class Parser {
     private static class ParseError extends RuntimeException {}
@@ -166,7 +166,7 @@ class Parser {
 
     // error handeling
     private ParseError error(Token token, String message) {
-        Intrpinator.error(token, message);
+        Gmm.error(token, message);
         return new ParseError();
     }
     private void synchronize() {

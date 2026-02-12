@@ -1,4 +1,4 @@
-package main.java.intrpinator;
+package main.java.gmm;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -7,7 +7,7 @@ import java.util.Map;
 
 import static java.lang.Character.isAlphabetic;
 import static java.lang.Character.isDigit;
-import static main.java.intrpinator.TokenType.*;
+import static main.java.gmm.TokenType.*;
 
 class Lexer {
     private final String source;
@@ -101,7 +101,7 @@ class Lexer {
             default:
                 if (isDigit(c)) number();
                 else if (isAlphabetic(c)) identifier();
-                else Intrpinator.error(line, "Unexpected characer: " + c);
+                else Gmm.error(line, "Unexpected characer: " + c);
                 break;
         }
     }
@@ -131,7 +131,7 @@ class Lexer {
             advance();
         }
         if (endOfFile()) {
-            Intrpinator.error(line, "Unterminated String from lines");
+            Gmm.error(line, "Unterminated String from lines");
             return;
         }
         advance();

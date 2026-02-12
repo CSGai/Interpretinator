@@ -1,4 +1,4 @@
-package main.java.intrpinator;
+package main.java.gmm;
 
 abstract class Stmt {
   interface Visitor<R> {

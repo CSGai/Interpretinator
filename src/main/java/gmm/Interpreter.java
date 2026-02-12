@@ -1,4 +1,4 @@
-package main.java.intrpinator;
+package main.java.gmm;
 
 
 class Interpreter implements Expr.Visitor<Object>{
@@ -9,7 +9,7 @@ class Interpreter implements Expr.Visitor<Object>{
             System.out.println(stringify(value));
         }
         catch (RuntimeError error) {
-            Intrpinator.runtimeError(error);
+            Gmm.runtimeError(error);
         }
     }
 
