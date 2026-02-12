@@ -11,6 +11,9 @@ public enum TokenType {
     GREATER, GREATER_EQUAL,
     LESS, LESS_EQUAL,
 
+    // Assignment
+    LEFT_ARROW, RIGHT_ARROW,
+
     // Literals.
     IDENTIFIER, STRING, NUMBER,
 

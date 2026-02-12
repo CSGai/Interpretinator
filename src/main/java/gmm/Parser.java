@@ -20,17 +20,27 @@ class Parser {
         List<Stmt> statements = new ArrayList<>();
 
         while (!endOfFile()) {
-            statements.add(statement());
+            statements.add(declaration());
         }
         return statements;
     }
 
     /* -- Heiarchy -- */
+    private Stmt declaration() {
+        try {
+            if (match(VAR)) return varDeclaration();
+            return statement();
+        }
+        catch (ParseError error) {
+            synchronize();
+            return null;
+        }
+
+    }
 
     // statements
     private Stmt statement() {
         if (match(PRINT)) return printStatement();
-
         return expressionStatement();
     }
     private Stmt printStatement() {
@@ -38,12 +48,21 @@ class Parser {
         consume(SEMICOLON, "Expect ; after statement");
         return new Stmt.Print(expr);
     }
-
     private Stmt expressionStatement() {
         Expr expr = expression();
         consume(SEMICOLON, "Expect ';' after expression.");
         return new Stmt.Expression(expr);
     }
+    private Stmt varDeclaration() {
+        Token name = consume(IDENTIFIER, "Expected identifier after declaration keyword");
+
+        Expr initializer = null;
+        if (match(LEFT_ARROW)) initializer = expression();
+
+        consume(SEMICOLON, "Expect ';' after variable declaration.");
+        return new Stmt.Var(name, initializer);
+    }
+
 
     // expressions
     private Expr expression() {
@@ -131,10 +150,7 @@ class Parser {
             case FALSE: advance(); return new Expr.Literal(false);
             case NULL: advance(); return new Expr.Literal(null);
             case NUMBER, STRING: advance(); return new Expr.Literal(token.literal);
-            // ################################################################
-            // TEMPRORAY JUST TO MAKE CODE RUN WITH NON NUMBERS AND STRINGS
-            case IDENTIFIER: advance(); return new Expr.Literal(token.lexeme);
-            // ################################################################
+            case IDENTIFIER: return new Expr.Variable(previous());
             case LEFT_PAREN:
                 advance();
                 Expr expr = expression();

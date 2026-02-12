@@ -1,1 +1,2 @@
-hadpes 5==5?"10":"4";
+mish test <- 5
+hadpes test==5?"10":"4";

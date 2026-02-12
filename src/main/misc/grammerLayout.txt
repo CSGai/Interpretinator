@@ -26,7 +26,6 @@ unary      -> ( "!" | "-" ) unary | primary ; TOKEN, EXPR
 primary    -> NUMBER | STRING | "true" | "false" | "null" | "(" expression ")" | IDENTIFIER ; EXPR
 
 # top level grammer
-program    -> statement* EOF ;
 program    -> declaration* EOF ;
 
 declaration-> varDecl | statement ;
