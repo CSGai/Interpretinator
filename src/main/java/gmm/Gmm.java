@@ -17,7 +17,7 @@ public class Gmm {
 
     public static void main(String[] args) throws IOException {
         // for testing:
-        runFile("src/main/misc/testRead.txt");
+        runFile("src/main/misc/testRead.gmm");
 
 //        if (args.length > 1) {
 //            System.exit(64);
@@ -63,6 +63,9 @@ public class Gmm {
         // Parser
         Parser parser = new Parser(tokens);
         List<Stmt> statments = parser.parse();
+        for (Stmt statment : statments) {
+            System.out.println(statment);
+        }
 
         // Stop if there was a syntax error.
         if (errorFlag) return;

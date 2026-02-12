@@ -1,9 +1,9 @@
 package main.java.gmm;
 
-
 import java.util.List;
 
 class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
+    private Enviroment enviroment = new Enviroment();
 
     void interpret(List<Stmt> statments) {
         try {
@@ -45,12 +45,10 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
         if (Truthful(condition)) return then;
         return otherwise;
     }
-
     @Override
     public Object visitVariableExpr(Expr.Variable expr) {
-        return null;
+        return enviroment.get(expr.name);
     }
-
     @Override
     public Object visitBinaryExpr(Expr.Binary expr) {
         Object left = eval(expr.left);
@@ -106,17 +104,13 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
         eval(stmt.expression);
         return null;
     }
-
     @Override
     public Void visitVarStmt(Stmt.Var stmt) {
+        Object value = null;
+        if (stmt.initializer!=null) value = eval(stmt.initializer);
+        enviroment.define(stmt.name.lexeme, value);
         return null;
     }
-
-    @Override
-    public Void visitVariableStmt(Stmt.Variable stmt) {
-        return null;
-    }
-
     @Override
     public Void visitPrintStmt(Stmt.Print stmt) {
         Object val = eval(stmt.expression);

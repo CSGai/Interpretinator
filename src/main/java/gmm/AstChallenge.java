@@ -58,6 +58,11 @@ class AstChallenge implements Expr.Visitor<String> {
                 + parenthesize("else", expr.elseBranch);
     }
 
+    @Override
+    public String visitVariableExpr(Expr.Variable expr) {
+        return expr.name.lexeme;
+    }
+
 
     private String parenthesize(String lexeme, Expr... exprs) {
         StringBuilder builder = new StringBuilder();

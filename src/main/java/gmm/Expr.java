@@ -1,7 +1,5 @@
 package main.java.gmm;
 
-import java.util.List;
-
 abstract class Expr {
   interface Visitor<R> {
     R visitBinaryExpr(Binary expr);

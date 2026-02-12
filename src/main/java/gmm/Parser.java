@@ -44,9 +44,9 @@ class Parser {
         return expressionStatement();
     }
     private Stmt printStatement() {
-        Expr expr = expression();
+        Expr value = expression();
         consume(SEMICOLON, "Expect ; after statement");
-        return new Stmt.Print(expr);
+        return new Stmt.Print(value);
     }
     private Stmt expressionStatement() {
         Expr expr = expression();
@@ -150,7 +150,7 @@ class Parser {
             case FALSE: advance(); return new Expr.Literal(false);
             case NULL: advance(); return new Expr.Literal(null);
             case NUMBER, STRING: advance(); return new Expr.Literal(token.literal);
-            case IDENTIFIER: return new Expr.Variable(previous());
+            case IDENTIFIER: advance(); return new Expr.Variable(previous());
             case LEFT_PAREN:
                 advance();
                 Expr expr = expression();
