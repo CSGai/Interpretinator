@@ -103,6 +103,11 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
             default: return null;
         }
     }
+    @Override
+    public Void visitBlockStmt(Stmt.Block stmt) {
+        executeBlock(stmt.statements, new Enviroment(enviroment));
+        return null;
+    }
 
     // Statement visitors
     @Override
@@ -159,7 +164,20 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     private void execute(Stmt statement) {
         statement.accept(this);
     }
+    private void executeBlock(List<Stmt> statements, Enviroment enviroment) {
+        // account for parent enviorment and current
+        Enviroment previousEnv = this.enviroment;
 
+        try{
+            this.enviroment = enviroment;
+            // process statements
+            for ( Stmt statement : statements) execute(statement);
+        }
+        finally {
+            // flush new current enviroment once block is finished
+            this.enviroment = previousEnv;
+        }
+    }
     // misc
     private String stringify(Object obj) {
         switch (obj) {

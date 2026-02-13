@@ -26,12 +26,9 @@ class Parser {
     }
 
     /* -- Heiarchy -- */
-
-    // expressions
     private Expr expression() {
         return sequence();
     }
-
 
     // statements
     private Stmt declaration() {
@@ -78,7 +75,7 @@ class Parser {
         return new Stmt.Var(name, initializer);
     }
 
-    // more expressions
+    // expressions
     private Expr sequence() {
         Expr lExpr = checkMissingLHO(this::assignment, COMMA);
 
