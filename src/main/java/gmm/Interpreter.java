@@ -52,7 +52,7 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     @Override
     public Object visitAssignExpr(Expr.Assign expr) {
         Object value = eval(expr.value);
-        enviroment.assign(expr.name, expr.value);
+        enviroment.assign(expr.name, value);
         return value;
     }
     @Override

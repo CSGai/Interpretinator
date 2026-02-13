@@ -26,10 +26,6 @@ class Parser {
     }
 
     /* -- Heiarchy -- */
-    private Expr expression() {
-        return sequence();
-    }
-
     // statements
     private Stmt declaration() {
         try {
@@ -44,7 +40,7 @@ class Parser {
     }
     private Stmt statement() {
         if (match(PRINT)) return printStatement();
-        if (match(LEFT_PAREN)) return new Stmt.Block(block());
+        if (match(LEFT_BRACE)) return new Stmt.Block(block());
         return expressionStatement();
     }
     private Stmt printStatement() {
@@ -61,8 +57,8 @@ class Parser {
         List<Stmt> statments = new ArrayList<>();
 
         while(!check(RIGHT_BRACE) && !endOfFile()) statments.add(declaration());
-        consume(RIGHT_PAREN, "Expected } at end of block.");
 
+        consume(RIGHT_BRACE, "Expected } at end of block.");
         return statments;
     }
     private Stmt varDeclaration() {
@@ -76,6 +72,9 @@ class Parser {
     }
 
     // expressions
+    private Expr expression() {
+        return sequence();
+    }
     private Expr sequence() {
         Expr lExpr = checkMissingLHO(this::assignment, COMMA);
 

@@ -1,4 +1,21 @@
-mish test <- 5;
-hadpes test;
-// blah blah blah commment
-hadpes "output: " + (test == 5 ? "10" : "4");
+mish scopeTest <- "scope1";
+
+{
+   mish scopeTest <- "scope2";
+   mish test <- 5;
+
+    // assignment test
+    mish blarg <- 20;
+    hadpes blarg;
+    blarg <- 10;
+    hadpes blarg;
+
+    // print test + ternary test
+    hadpes "output: " + (test == 5 ? "10" : "4");
+
+    // scope test
+    hadpes scopeTest;
+}
+
+// scope test2
+hadpes scopeTest;

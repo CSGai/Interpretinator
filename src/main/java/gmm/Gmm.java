@@ -56,16 +56,21 @@ public class Gmm {
         // Scanner
         Lexer lex = new Lexer(sourceCode);
         List<Token> tokens =  lex.scanTokens();
+        System.out.println("tokens:");
         for (Token token : tokens) {
             System.out.println(token);
+            if (token.type == TokenType.SEMICOLON) System.out.println("");
         }
+        System.out.println("...........");
 
         // Parser
         Parser parser = new Parser(tokens);
         List<Stmt> statments = parser.parse();
+        System.out.println("Statements:");
         for (Stmt statment : statments) {
             System.out.println(statment);
         }
+        System.out.println("...........");
 
         // Stop if there was a syntax error.
         if (errorFlag) return;
