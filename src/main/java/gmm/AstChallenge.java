@@ -1,4 +1,4 @@
-package main.java.intrpinator;
+package main.java.gmm;
 
 class AstChallenge implements Expr.Visitor<String> {
 
@@ -56,6 +56,11 @@ class AstChallenge implements Expr.Visitor<String> {
         return parenthesize("if",expr.condition)
                 + parenthesize("then", expr.thenBranch)
                 + parenthesize("else", expr.elseBranch);
+    }
+
+    @Override
+    public String visitVariableExpr(Expr.Variable expr) {
+        return expr.name.lexeme;
     }
 
 

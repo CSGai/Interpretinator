@@ -1,7 +1,4 @@
-package main.java.intrpinator;
-
-import java.util.Arrays;
-import java.util.Map;
+package main.java.gmm;
 
 class AstPrinter implements Expr.Visitor<String> {
 
@@ -13,23 +10,19 @@ class AstPrinter implements Expr.Visitor<String> {
     public String visitBinaryExpr(Expr.Binary expr) {
         return parenthesize(expr.operator.lexeme, expr.left, expr.right);
     }
-
     @Override
     public String visitGroupingExpr(Expr.Grouping expr) {
         return parenthesize("group", expr.expression);
     }
-
     @Override
     public String visitLiteralExpr(Expr.Literal expr) {
         if (expr.value == null) return "null";
         return expr.value.toString();
     }
-
     @Override
     public String visitUnaryExpr(Expr.Unary expr) {
         return parenthesize(expr.operator.lexeme, expr.right);
     }
-
     @Override
     public String visitTernaryExpr(Expr.Ternary expr) {
         return "("
@@ -37,6 +30,10 @@ class AstPrinter implements Expr.Visitor<String> {
                     + parenthesize("then", expr.thenBranch)
                     + parenthesize("else", expr.elseBranch) +
                 ")";
+    }
+    @Override
+    public String visitVariableExpr(Expr.Variable expr) {
+        return expr.name.lexeme;
     }
 
     private String parenthesize(String lexeme, Expr... exprs) {

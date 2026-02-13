@@ -1,4 +1,4 @@
-package main.java.intrpinator;
+package main.java.gmm;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -7,7 +7,7 @@ import java.util.Map;
 
 import static java.lang.Character.isAlphabetic;
 import static java.lang.Character.isDigit;
-import static main.java.intrpinator.TokenType.*;
+import static main.java.gmm.TokenType.*;
 
 class Lexer {
     private final String source;
@@ -66,11 +66,12 @@ class Lexer {
             case '?': addToken(QUESTION); break;
             case '!': addToken(match('=') ? BANG_EQUAL : BANG); break;
             case '=': addToken(match('=') ? EQUAL_EQUAL : EQUAL); break;
-            case '<': addToken(match('=') ? LESS_EQUAL : LESS); break;
             case '>': addToken(match('=') ? GREATER_EQUAL : GREATER); break;
+            // assignment
+            case '<': addToken(match('=') ? LESS_EQUAL : match('-')? LEFT_ARROW : LESS); break;
+            case '-': addToken(match('>') ? LEFT_ARROW : MINUS); break;
             // math
             case '*': addToken(STAR); break;
-            case '-': addToken(MINUS); break;
             case '+': addToken(PLUS); break;
             // special handling for comments
             case '/':
@@ -101,7 +102,7 @@ class Lexer {
             default:
                 if (isDigit(c)) number();
                 else if (isAlphabetic(c)) identifier();
-                else Intrpinator.error(line, "Unexpected characer: " + c);
+                else Gmm.error(line, "Unexpected characer: " + c);
                 break;
         }
     }
@@ -131,7 +132,7 @@ class Lexer {
             advance();
         }
         if (endOfFile()) {
-            Intrpinator.error(line, "Unterminated String from lines");
+            Gmm.error(line, "Unterminated String from lines");
             return;
         }
         advance();

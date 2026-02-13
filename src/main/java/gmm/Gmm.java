@@ -1,4 +1,4 @@
-package main.java.intrpinator;
+package main.java.gmm;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -9,7 +9,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.List;
 
-public class Intrpinator {
+public class Gmm {
     static boolean errorFlag = false;
     static boolean hadRuntimeError = false;
 
@@ -17,7 +17,7 @@ public class Intrpinator {
 
     public static void main(String[] args) throws IOException {
         // for testing:
-        runFile("src/main/misc/testRead.txt");
+        runFile("src/main/misc/testRead.gmm");
 
 //        if (args.length > 1) {
 //            System.exit(64);
@@ -62,13 +62,16 @@ public class Intrpinator {
 
         // Parser
         Parser parser = new Parser(tokens);
-        Expr expression = parser.parse();
+        List<Stmt> statments = parser.parse();
+        for (Stmt statment : statments) {
+            System.out.println(statment);
+        }
 
         // Stop if there was a syntax error.
         if (errorFlag) return;
 
         // Interpreter
-        interpreter.interpret(expression);
+        interpreter.interpret(statments);
 
 //        System.out.println(new AstPrinter().print(expression));
     }

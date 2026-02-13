@@ -1,4 +1,4 @@
-package main.java.intrpinator;
+package main.java.gmm;
 
 public enum TokenType {
     LEFT_PAREN, RIGHT_PAREN, LEFT_BRACE, RIGHT_BRACE,
@@ -10,6 +10,9 @@ public enum TokenType {
     EQUAL, EQUAL_EQUAL,
     GREATER, GREATER_EQUAL,
     LESS, LESS_EQUAL,
+
+    // Assignment
+    LEFT_ARROW, RIGHT_ARROW,
 
     // Literals.
     IDENTIFIER, STRING, NUMBER,
