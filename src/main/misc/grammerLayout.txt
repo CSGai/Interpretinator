@@ -17,6 +17,7 @@ operator   -> "==" | "!=" | "<" | "<=" | ">" | ">=" | "+"  | "-"  | "*" | "/" ; 
 # parsing layer grammer
 expression -> block ; EXPR
 sequance   -> ternary ( ( "," ) ternary )* ; EXPR, (TOKEN, EXPR)...
+assignment -> ( identifier "<-" )? assignment | ternary ;
 ternary    -> equality ( ( "?" ) equality ( ":" ) equality )? ; EXPR, TOKEN, EXPR, TOKEN, EXPR
 equality   -> comparison ( ( "!=" | "==" ) comparison )* ; EXPR, (TOKEN, EXPR)...
 comparison -> term ( ( ">" | ">=" | "<" | "<=" ) term )* ; EXPR, (TOKEN, EXPR)...
@@ -31,7 +32,10 @@ program    -> declaration* EOF ;
 declaration-> varDecl | statement ;
 varDecl    -> "mish" IDENTIFIER ( "<-" expression )? ";" ;
 
-statement  -> exprStmt | printStmt ;
+statement  -> exprStmt | printStmt | block ;
+block      -> "{" declaration* "}" ;
+expression -> assignment ;
+assignment -> IDENTIFIER "<-" assignment | equality ;
 
 exprStmt   -> expression ";" ;
 printStmt  -> "hadpes" expression ";" ;

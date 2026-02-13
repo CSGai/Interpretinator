@@ -26,6 +26,14 @@ class Parser {
     }
 
     /* -- Heiarchy -- */
+
+    // expressions
+    private Expr expression() {
+        return sequence();
+    }
+
+
+    // statements
     private Stmt declaration() {
         try {
             if (match(VAR)) return varDeclaration();
@@ -37,10 +45,9 @@ class Parser {
         }
 
     }
-
-    // statements
     private Stmt statement() {
         if (match(PRINT)) return printStatement();
+        if (match(LEFT_PAREN)) return new Stmt.Block(block());
         return expressionStatement();
     }
     private Stmt printStatement() {
@@ -53,6 +60,14 @@ class Parser {
         consume(SEMICOLON, "Expect ';' after expression.");
         return new Stmt.Expression(expr);
     }
+    private List<Stmt> block() {
+        List<Stmt> statments = new ArrayList<>();
+
+        while(!check(RIGHT_BRACE) && !endOfFile()) statments.add(declaration());
+        consume(RIGHT_PAREN, "Expected } at end of block.");
+
+        return statments;
+    }
     private Stmt varDeclaration() {
         Token name = consume(IDENTIFIER, "Expected identifier after declaration keyword");
 
@@ -63,13 +78,9 @@ class Parser {
         return new Stmt.Var(name, initializer);
     }
 
-
-    // expressions
-    private Expr expression() {
-        return sequence();
-    }
+    // more expressions
     private Expr sequence() {
-        Expr lExpr = checkMissingLHO(this::ternary, COMMA);
+        Expr lExpr = checkMissingLHO(this::assignment, COMMA);
 
         while (match(COMMA)) {
             Token operator = previous();
@@ -77,6 +88,21 @@ class Parser {
             lExpr = new Expr.Binary(lExpr, operator, rExpr);
         }
         return lExpr;
+    }
+    private Expr assignment() {
+        Expr expr = ternary();
+
+        if (match(LEFT_ARROW)) {
+            Token assignSymbol = previous();
+            Expr value = assignment();
+
+            if (expr instanceof Expr.Variable) {
+                Token name = ((Expr.Variable) expr).name;
+                return new Expr.Assign(name, value);
+            }
+            error(assignSymbol, "Invalid assignment target.");
+        }
+        return expr;
     }
     private Expr ternary() {
         Expr expr = checkMissingLHO(this::equality, QUESTION);
@@ -177,6 +203,10 @@ class Parser {
     }
     private Token previous() {
         return tokens.get(current_idx - 1);
+    }
+    private boolean check(TokenType type) {
+        if (endOfFile()) return false;
+        return peek().type == type;
     }
 
     // special methods

@@ -26,6 +26,11 @@ class AstChallenge implements Expr.Visitor<String> {
     }
 
     @Override
+    public String visitAssignExpr(Expr.Assign expr) {
+        return "";
+    }
+
+    @Override
     public String visitBinaryExpr(Expr.Binary expr) {
         return  String.format(
             "%s %s %s",

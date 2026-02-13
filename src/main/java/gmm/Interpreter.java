@@ -3,7 +3,7 @@ package main.java.gmm;
 import java.util.List;
 
 class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
-    private Enviroment enviroment = new Enviroment();
+    Enviroment enviroment = new Enviroment();
 
     void interpret(List<Stmt> statments) {
         try {
@@ -48,6 +48,12 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     @Override
     public Object visitVariableExpr(Expr.Variable expr) {
         return enviroment.get(expr.name);
+    }
+    @Override
+    public Object visitAssignExpr(Expr.Assign expr) {
+        Object value = eval(expr.value);
+        enviroment.assign(expr.name, expr.value);
+        return value;
     }
     @Override
     public Object visitBinaryExpr(Expr.Binary expr) {
@@ -129,6 +135,7 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
         if (left instanceof Double && right instanceof Double) return;
         throw new RuntimeError(operator, "Operands must be numbers.");
     }
+
     // mics checks
     private Boolean equality(Object left, Object right) {
         if (left == null & right == null) return true;
